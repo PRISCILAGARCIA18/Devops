@@ -1,0 +1,521 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Insumos de Oficina</title>
+  <style>
+    :root{
+      --bg:#0b1220;
+      --text:#e8eeff;
+      --muted:#9fb0d0;
+      --border:rgba(255,255,255,.12);
+      --ok:#22c55e;
+      --warn:#f59e0b;
+      --accent:#5aa2ff;
+      --bad:#ef4444;
+      --radius:18px;
+      --shadow:0 18px 50px rgba(0,0,0,.35);
+      --font: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:var(--font);
+      color:var(--text);
+      background:
+        radial-gradient(900px 500px at 15% 10%, rgba(90,162,255,.22), transparent 60%),
+        radial-gradient(900px 500px at 85% 15%, rgba(139,92,246,.16), transparent 60%),
+        radial-gradient(800px 500px at 50% 90%, rgba(34,197,94,.10), transparent 55%),
+        var(--bg);
+      min-height:100vh;
+    }
+    .wrap{max-width:1150px; margin:0 auto; padding:26px 18px 60px;}
+    header{display:flex; align-items:flex-start; justify-content:space-between; gap:14px; margin-bottom:16px;}
+    h1{margin:0; font-size:28px}
+    .sub{margin:6px 0 0; color:var(--muted); font-size:14px; line-height:1.35}
+    .actions{display:flex; gap:10px; flex-wrap:wrap; justify-content:flex-end}
+    .btn{
+      border:1px solid var(--border);
+      background:rgba(255,255,255,.04);
+      color:var(--text);
+      padding:10px 12px;
+      border-radius:12px;
+      cursor:pointer;
+      transition:.15s ease;
+      display:inline-flex;
+      gap:8px;
+      align-items:center;
+      font-weight:800;
+      font-size:13px;
+      user-select:none;
+    }
+    .btn:hover{transform:translateY(-1px); background:rgba(255,255,255,.06)}
+    .btn.primary{
+      background:linear-gradient(135deg, rgba(90,162,255,.95), rgba(139,92,246,.85));
+      border-color:transparent;
+      box-shadow:0 10px 24px rgba(90,162,255,.18);
+    }
+    .btn.danger{border-color:rgba(239,68,68,.35); background:rgba(239,68,68,.10)}
+    .grid{display:grid; grid-template-columns: 1.05fr .95fr; gap:14px;}
+    @media (max-width: 980px){ .grid{grid-template-columns:1fr} }
+
+    .card{
+      background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
+      border:1px solid var(--border);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      overflow:hidden;
+    }
+    .hd{
+      padding:14px 16px;
+      border-bottom:1px solid var(--border);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+    }
+    .hd h2{margin:0; font-size:16px}
+    .bd{padding:16px}
+
+    .kpis{display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin-bottom:14px;}
+    @media (max-width: 980px){ .kpis{grid-template-columns:repeat(2,1fr)} }
+    .kpi{border:1px solid var(--border); background:rgba(255,255,255,.035); border-radius:16px; padding:12px;}
+    .kpi .label{color:var(--muted); font-size:12px; font-weight:900}
+    .kpi .value{font-size:22px; font-weight:900; margin-top:4px}
+
+    form{display:grid; gap:10px;}
+    label{display:block; font-size:12px; color:var(--muted); margin-bottom:6px; font-weight:900}
+    input,select{
+      width:100%;
+      padding:11px 12px;
+      border-radius:12px;
+      border:1px solid var(--border);
+      background:rgba(7,12,24,.55);
+      color:var(--text);
+      outline:none;
+    }
+    input:focus, select:focus{border-color:rgba(90,162,255,.6); box-shadow:0 0 0 4px rgba(90,162,255,.12);}
+    .row{display:grid; grid-template-columns:1fr 1fr; gap:10px;}
+    @media (max-width: 560px){ .row{grid-template-columns:1fr} }
+    .hint{color:var(--muted); font-size:12px; margin-top:6px; line-height:1.35}
+
+    .toolbar{display:flex; gap:10px; flex-wrap:wrap; align-items:center; justify-content:space-between;}
+    .toolbar .left,.toolbar .right{display:flex; gap:10px; flex-wrap:wrap; align-items:center;}
+    .search{min-width:240px}
+
+    table{
+      width:100%;
+      border-collapse:separate;
+      border-spacing:0;
+      border:1px solid var(--border);
+      border-radius:16px;
+      background:rgba(0,0,0,.15);
+      overflow:hidden;
+    }
+    thead th{
+      text-align:left;
+      font-size:12px;
+      color:var(--muted);
+      padding:12px;
+      border-bottom:1px solid var(--border);
+      background:rgba(255,255,255,.03);
+      position:sticky;
+      top:0;
+      backdrop-filter: blur(10px);
+      z-index:1;
+    }
+    tbody td{
+      padding:12px;
+      border-bottom:1px solid rgba(255,255,255,.06);
+      font-size:13px;
+      vertical-align:top;
+    }
+    tbody tr:hover td{background:rgba(255,255,255,.03)}
+
+    .badge{
+      display:inline-flex; align-items:center; gap:6px;
+      font-weight:900; font-size:12px;
+      padding:6px 10px;
+      border-radius:999px;
+      border:1px solid var(--border);
+      background:rgba(255,255,255,.03);
+      white-space:nowrap;
+    }
+    .dot{width:8px;height:8px;border-radius:999px;display:inline-block}
+    .b-pendiente .dot{background:var(--warn)}
+    .b-aprobado .dot{background:var(--ok)}
+    .b-entregado .dot{background:var(--accent)}
+    .muted{color:var(--muted)}
+    .empty{
+      padding:18px;
+      border:1px dashed rgba(255,255,255,.18);
+      border-radius:16px;
+      background:rgba(255,255,255,.02);
+      color:var(--muted);
+      text-align:center;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+    <header>
+      <div>
+        <h1>📦 Pedidos de Insumos de Oficina</h1>
+        <p class="sub">Registra pedidos (compras internas), guarda en MongoDB y cambia el estado desde la tabla.</p>
+      </div>
+      <div class="actions">
+        <button class="btn" id="btnRefrescar" type="button">🔄 Refrescar</button>
+        <button class="btn danger" id="btnLimpiar" type="button">🧹 Limpiar filtros</button>
+        <button class="btn primary" id="btnIrForm" type="button">➕ Nuevo pedido</button>
+      </div>
+    </header>
+
+    <section class="kpis">
+      <div class="kpi"><div class="label">Total</div><div class="value" id="kpiTotal">—</div></div>
+      <div class="kpi"><div class="label">Pendientes</div><div class="value" id="kpiPend">—</div></div>
+      <div class="kpi"><div class="label">Aprobados</div><div class="value" id="kpiApr">—</div></div>
+      <div class="kpi"><div class="label">Entregados</div><div class="value" id="kpiEnt">—</div></div>
+    </section>
+
+    <section class="grid">
+      <!-- FORM -->
+      <div class="card" id="cardForm">
+        <div class="hd">
+          <h2>📝 Registrar pedido</h2>
+          <span class="muted" id="apiStatus">API: —</span>
+        </div>
+        <div class="bd">
+          <form id="form" autocomplete="off">
+            <div class="row">
+              <div>
+                <label>Solicitante</label>
+                <input name="solicitante" placeholder="Ej. Priscila García" required />
+              </div>
+              <div>
+                <label>Fecha</label>
+                <input name="fecha" type="date" required />
+              </div>
+            </div>
+
+            <div class="row">
+              <div>
+                <label>Insumo (producto)</label>
+                <input name="insumo" placeholder="Ej. Hojas tamaño carta" required />
+                <div class="hint">En este sistema, el insumo representa la selección del producto comprado internamente.</div>
+              </div>
+              <div>
+                <label>Cantidad</label>
+                <input name="cantidad" type="number" min="1" value="1" required />
+              </div>
+            </div>
+
+            <div class="row">
+              <div>
+                <label>Estado</label>
+                <select name="estado">
+                  <option value="Pendiente" selected>Pendiente</option>
+                  <option value="Aprobado">Aprobado</option>
+                  <option value="Entregado">Entregado</option>
+                </select>
+              </div>
+              <div style="display:flex;align-items:flex-end;">
+                <button class="btn primary" id="btnGuardar" type="submit" style="width:100%; justify-content:center;">
+                  💾 Guardar pedido
+                </button>
+              </div>
+            </div>
+
+            <div class="hint muted" id="msg">—</div>
+          </form>
+        </div>
+      </div>
+
+      <!-- LIST -->
+      <div class="card">
+        <div class="hd">
+          <h2>📋 Pedidos guardados (BD)</h2>
+          <span class="muted" id="lastUpdate">Última actualización: —</span>
+        </div>
+        <div class="bd">
+          <div class="toolbar">
+            <div class="left">
+              <input class="search" id="q" placeholder="Buscar (solicitante o insumo)..." />
+              <select id="fEstado">
+                <option value="">Todos</option>
+                <option value="Pendiente">Pendiente</option>
+                <option value="Aprobado">Aprobado</option>
+                <option value="Entregado">Entregado</option>
+              </select>
+            </div>
+            <div class="right">
+              <select id="fOrden">
+                <option value="recientes" selected>Más recientes</option>
+                <option value="antiguos">Más antiguos</option>
+              </select>
+            </div>
+          </div>
+
+          <div style="height:10px"></div>
+          <div id="tableWrap"></div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    const form = document.getElementById("form");
+    const msg = document.getElementById("msg");
+    const tableWrap = document.getElementById("tableWrap");
+
+    const btnRefrescar = document.getElementById("btnRefrescar");
+    const btnLimpiar = document.getElementById("btnLimpiar");
+    const btnIrForm = document.getElementById("btnIrForm");
+    const btnGuardar = document.getElementById("btnGuardar");
+
+    const apiStatus = document.getElementById("apiStatus");
+    const lastUpdate = document.getElementById("lastUpdate");
+
+    const q = document.getElementById("q");
+    const fEstado = document.getElementById("fEstado");
+    const fOrden = document.getElementById("fOrden");
+
+    const kpiTotal = document.getElementById("kpiTotal");
+    const kpiPend = document.getElementById("kpiPend");
+    const kpiApr = document.getElementById("kpiApr");
+    const kpiEnt = document.getElementById("kpiEnt");
+
+    let pedidos = [];
+    let loading = false;
+
+    // fecha hoy
+    const now = new Date();
+    const yyyy = now.getFullYear();
+    const mm = String(now.getMonth()+1).padStart(2,"0");
+    const dd = String(now.getDate()).padStart(2,"0");
+    form.elements["fecha"].value = `${yyyy}-${mm}-${dd}`;
+
+    function setApi(ok){
+      apiStatus.textContent = `API: ${ok ? "Conectada" : "Sin conexión"}`;
+      apiStatus.style.color = ok ? "rgba(34,197,94,.95)" : "rgba(239,68,68,.95)";
+    }
+
+    function setUpdate(){
+      const d = new Date();
+      const pad2 = n => String(n).padStart(2,"0");
+      lastUpdate.textContent = `Última actualización: ${pad2(d.getHours())}:${pad2(d.getMinutes())}:${pad2(d.getSeconds())}`;
+    }
+
+    function escapeHtml(str){
+      return String(str).replace(/[&<>"']/g, m => ({
+        "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
+      })[m]);
+    }
+
+    function fmtDate(iso){
+      if (!iso) return "—";
+      const d = new Date(iso);
+      if (isNaN(d.getTime())) return iso;
+      const pad2 = n => String(n).padStart(2,"0");
+      return `${pad2(d.getDate())}/${pad2(d.getMonth()+1)}/${d.getFullYear()}`;
+    }
+
+    function badgeEstado(value){
+      const v = (value || "Pendiente").toLowerCase();
+      if (v === "aprobado") return `<span class="badge b-aprobado"><span class="dot"></span>Aprobado</span>`;
+      if (v === "entregado") return `<span class="badge b-entregado"><span class="dot"></span>Entregado</span>`;
+      return `<span class="badge b-pendiente"><span class="dot"></span>Pendiente</span>`;
+    }
+
+    function updateKPIs(list){
+      kpiTotal.textContent = list.length;
+      kpiPend.textContent = list.filter(p => (p.estado||"Pendiente").toLowerCase()==="pendiente").length;
+      kpiApr.textContent = list.filter(p => (p.estado||"").toLowerCase()==="aprobado").length;
+      kpiEnt.textContent = list.filter(p => (p.estado||"").toLowerCase()==="entregado").length;
+    }
+
+    function applyFilters(){
+      const term = (q.value||"").trim().toLowerCase();
+      const est = (fEstado.value||"").trim().toLowerCase();
+      let out = [...pedidos];
+
+      if (term){
+        out = out.filter(p => {
+          const s = (p.solicitante||"").toLowerCase();
+          const i = (p.insumo||"").toLowerCase();
+          return s.includes(term) || i.includes(term);
+        });
+      }
+      if (est){
+        out = out.filter(p => (p.estado||"Pendiente").toLowerCase() === est);
+      }
+      if (fOrden.value === "antiguos"){
+        out.reverse();
+      }
+      return out;
+    }
+
+    function render(){
+      const list = applyFilters();
+      updateKPIs(pedidos);
+
+      if (loading){
+        tableWrap.innerHTML = `<div class="empty">Cargando pedidos desde MongoDB…</div>`;
+        return;
+      }
+      if (!list.length){
+        tableWrap.innerHTML = `<div class="empty">Sin resultados. Registra un pedido o limpia filtros.</div>`;
+        return;
+      }
+
+      const rows = list.map((p, idx)=>`
+        <tr>
+          <td class="muted">${idx+1}</td>
+          <td><b>${escapeHtml(p.solicitante ?? "")}</b></td>
+          <td>${escapeHtml(p.insumo ?? "")}</td>
+          <td><b>${Number(p.cantidad ?? "")}</b></td>
+          <td>${fmtDate(p.fecha)}</td>
+          <td>
+            ${badgeEstado(p.estado)}
+            <div style="margin-top:8px; display:flex; gap:8px; flex-wrap:wrap;">
+              <button class="btn" type="button" onclick="cambiarEstado('${p._id}','Aprobado')">Aprobar</button>
+              <button class="btn" type="button" onclick="cambiarEstado('${p._id}','Entregado')">Entregar</button>
+              <button class="btn" type="button" onclick="cambiarEstado('${p._id}','Pendiente')">Volver</button>
+            </div>
+          </td>
+        </tr>
+      `).join("");
+
+      tableWrap.innerHTML = `
+        <table>
+          <thead>
+            <tr>
+              <th style="width:64px">#</th>
+              <th>Solicitante</th>
+              <th>Insumo</th>
+              <th style="width:110px">Cantidad</th>
+              <th style="width:130px">Fecha</th>
+              <th style="width:260px">Estado / Acciones</th>
+            </tr>
+          </thead>
+          <tbody>${rows}</tbody>
+        </table>
+      `;
+    }
+
+    async function cargar(){
+      loading = true;
+      render();
+      try{
+        const res = await fetch("/api/pedidos");
+        setApi(res.ok);
+        if (!res.ok) throw new Error("Error GET /api/pedidos");
+        pedidos = await res.json();
+        setUpdate();
+      }catch(e){
+        setApi(false);
+        console.error(e);
+      }finally{
+        loading = false;
+        render();
+      }
+    }
+
+    // ✅ Cambiar estado (Pendiente/Aprobado/Entregado)
+    async function cambiarEstado(id, estado){
+      try{
+        const res = await fetch(`/api/pedidos/${id}/estado`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ estado })
+        });
+
+        const out = await res.json().catch(()=> ({}));
+        setApi(res.ok);
+
+        if (!res.ok){
+          alert("Error: " + (out.error || "No se pudo actualizar"));
+          return;
+        }
+        await cargar();
+      }catch(e){
+        setApi(false);
+        alert("Error de red. Revisa el backend.");
+        console.error(e);
+      }
+    }
+    window.cambiarEstado = cambiarEstado;
+
+    form.addEventListener("submit", async (e)=>{
+      e.preventDefault();
+      msg.textContent = "Guardando…";
+
+      const payload = {
+        solicitante: form.elements["solicitante"].value.trim(),
+        insumo: form.elements["insumo"].value.trim(),
+        cantidad: Number(form.elements["cantidad"].value),
+        fecha: form.elements["fecha"].value,
+        estado: form.elements["estado"].value
+      };
+
+      if (!payload.solicitante || !payload.insumo || !payload.fecha || !Number.isFinite(payload.cantidad) || payload.cantidad < 1){
+        msg.textContent = "⚠️ Completa los campos correctamente.";
+        return;
+      }
+
+      btnGuardar.disabled = true;
+      btnGuardar.textContent = "Guardando…";
+
+      try{
+        const res = await fetch("/api/pedidos", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+
+        const out = await res.json().catch(()=> ({}));
+        setApi(res.ok);
+
+        if (!res.ok){
+          msg.textContent = "❌ Error: " + (out.error || out.message || "No se pudo guardar");
+          return;
+        }
+
+        msg.textContent = "✅ Guardado en MongoDB. Actualizando tabla…";
+        form.reset();
+        form.elements["cantidad"].value = 1;
+        form.elements["estado"].value = "Pendiente";
+        form.elements["fecha"].value = `${yyyy}-${mm}-${dd}`;
+
+        await cargar();
+      }catch(e){
+        setApi(false);
+        console.error(e);
+        msg.textContent = "❌ Error de red.";
+      }finally{
+        btnGuardar.disabled = false;
+        btnGuardar.textContent = "💾 Guardar pedido";
+      }
+    });
+
+    btnRefrescar.addEventListener("click", cargar);
+    btnLimpiar.addEventListener("click", ()=>{
+      q.value = "";
+      fEstado.value = "";
+      fOrden.value = "recientes";
+      render();
+    });
+    btnIrForm.addEventListener("click", ()=>{
+      document.getElementById("cardForm").scrollIntoView({behavior:"smooth", block:"start"});
+      setTimeout(()=> form.elements["solicitante"].focus(), 250);
+    });
+
+    q.addEventListener("input", render);
+    fEstado.addEventListener("change", render);
+    fOrden.addEventListener("change", render);
+
+    cargar();
+  </script>
+</body>
+</html>
