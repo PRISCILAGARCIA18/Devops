@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Insumos de Oficina</title>
+  <style>
+    body{font-family: Arial, sans-serif; background:#f6f7fb; margin:0; padding:30px;}
+    .card{max-width:900px; margin:auto; background:#fff; border-radius:12px; padding:18px; box-shadow:0 6px 20px rgba(0,0,0,.08);}
+    h1{margin:0 0 10px;}
+    label{display:block; margin-top:12px; font-weight:600;}
+    input,select{width:100%; padding:10px; margin-top:6px; border:1px solid #ddd; border-radius:8px;}
+    button{margin-top:14px; padding:10px 14px; border:none; border-radius:8px; cursor:pointer;}
+    table{width:100%; border-collapse:collapse; margin-top:16px;}
+    th,td{border:1px solid #eee; padding:10px; text-align:left;}
+    th{background:#fafafa;}
+    .row{display:grid; grid-template-columns:1fr 1fr; gap:12px;}
+    .msg{margin-top:10px; font-weight:600;}
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>Pedidos de Insumos de Oficina</h1>
+    <p>Llena el formulario y guarda.  (insumos_oficina → pedidos).</p>
+
+    <form id="form">
+      <label>Solicitante</label>
+      <input name="solicitante" placeholder="Ej. Priscila" required />
+
+      <label>Insumo</label>
+      <input name="insumo" placeholder="Ej. Hojas tamaño carta" required />
+
+      <div class="row">
+        <div>
+          <label>Cantidad</label>
+          <input name="cantidad" type="number" min="1" value="1" required />
+        </div>
+        <div>
+          <label>Fecha</label>
+          <input name="fecha" type="date" required />
+        </div>
+      </div>
+
+      <label>Estado</label>
+      <select name="estado">
+        <option value="Pendiente" selected>Pendiente</option>
+        <option value="Aprobado">Aprobado</option>
+        <option value="Entregado">Entregado</option>
+      </select>
+
+      <button type="submit">Guardar pedido</button>
+      <div class="msg" id="msg"></div>
+    </form>
+
+    <h2>Pedidos guardados</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Solicitante</th>
+          <th>Insumo</th>
+          <th>Cantidad</th>
+          <th>Fecha</th>
+          <th>Estado</th>
+        </tr>
+      </thead>
+      <tbody id="tbody"></tbody>
+    </table>
+  </div>
+
+  <script>
+    const form = document.getElementById("form");
+    const msg = document.getElementById("msg");
+    const tbody = document.getElementById("tbody");
+
+    // fecha hoy
+    const f = new Date();
+    const yyyy = f.getFullYear();
+    const mm = String(f.getMonth()+1).padStart(2,"0");
+    const dd = String(f.getDate()).padStart(2,"0");
+    form.elements["fecha"].value = `${yyyy}-${mm}-${dd}`;
+
+    async function cargar() {
+      tbody.innerHTML = "";
+      const res = await fetch("/api/pedidos");
+      const data = await res.json();
+
+      data.forEach(p => {
+        const tr = document.createElement("tr");
+        const fecha = p.fecha ? new Date(p.fecha).toISOString().slice(0,10) : "";
+        tr.innerHTML = `
+          <td>${p.solicitante ?? ""}</td>
+          <td>${p.insumo ?? ""}</td>
+          <td>${p.cantidad ?? ""}</td>
+          <td>${fecha}</td>
+          <td>${p.estado ?? ""}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      msg.textContent = "Guardando...";
+
+      const payload = {
+        solicitante: form.elements["solicitante"].value.trim(),
+        insumo: form.elements["insumo"].value.trim(),
+        cantidad: form.elements["cantidad"].value,
+        fecha: form.elements["fecha"].value,
+        estado: form.elements["estado"].value
+      };
+
+      const res = await fetch("/api/pedidos", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+
+      const out = await res.json();
+
+      if (!res.ok) {
+        msg.textContent = "❌ Error: " + (out.error || out.message || "No se pudo guardar");
+        return;
+      }
+
+      msg.textContent = "✅ Guardado. Revisa MongoDB Compass.";
+      form.reset();
+      form.elements["cantidad"].value = 1;
+      form.elements["estado"].value = "Pendiente";
+      form.elements["fecha"].value = `${yyyy}-${mm}-${dd}`;
+
+      await cargar();
+    });
+
+    cargar();
+  </script>
+</body>
+</html>
