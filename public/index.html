@@ -2,135 +2,813 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Insumos de Oficina</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pedidos de Insumos de Oficina</title>
   <style>
-    body{font-family: Arial, sans-serif; background:#f6f7fb; margin:0; padding:30px;}
-    .card{max-width:900px; margin:auto; background:#fff; border-radius:12px; padding:18px; box-shadow:0 6px 20px rgba(0,0,0,.08);}
-    h1{margin:0 0 10px;}
-    label{display:block; margin-top:12px; font-weight:600;}
-    input,select{width:100%; padding:10px; margin-top:6px; border:1px solid #ddd; border-radius:8px;}
-    button{margin-top:14px; padding:10px 14px; border:none; border-radius:8px; cursor:pointer;}
-    table{width:100%; border-collapse:collapse; margin-top:16px;}
-    th,td{border:1px solid #eee; padding:10px; text-align:left;}
-    th{background:#fafafa;}
-    .row{display:grid; grid-template-columns:1fr 1fr; gap:12px;}
-    .msg{margin-top:10px; font-weight:600;}
+    :root{
+      --bg-1:#0f172a;
+      --bg-2:#1e293b;
+      --panel:rgba(255,255,255,.10);
+      --panel-2:rgba(255,255,255,.06);
+      --border:rgba(255,255,255,.16);
+      --text:#f8fafc;
+      --muted:#cbd5e1;
+      --primary:#60a5fa;
+      --primary-2:#818cf8;
+      --success:#22c55e;
+      --warning:#f59e0b;
+      --info:#38bdf8;
+      --danger:#ef4444;
+      --shadow:0 20px 45px rgba(0,0,0,.28);
+      --radius:20px;
+      --radius-sm:14px;
+      --font: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    *{
+      box-sizing:border-box;
+    }
+
+    body{
+      margin:0;
+      font-family:var(--font);
+      color:var(--text);
+      min-height:100vh;
+      background:
+        radial-gradient(circle at top left, rgba(96,165,250,.25), transparent 30%),
+        radial-gradient(circle at top right, rgba(129,140,248,.22), transparent 28%),
+        radial-gradient(circle at bottom center, rgba(34,197,94,.15), transparent 24%),
+        linear-gradient(135deg, var(--bg-1), var(--bg-2));
+    }
+
+    .container{
+      width:min(1180px, calc(100% - 32px));
+      margin:32px auto 48px;
+    }
+
+    .hero{
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-start;
+      gap:18px;
+      margin-bottom:22px;
+      padding:24px;
+      border:1px solid var(--border);
+      background:linear-gradient(135deg, rgba(255,255,255,.12), rgba(255,255,255,.05));
+      border-radius:24px;
+      box-shadow:var(--shadow);
+      backdrop-filter: blur(14px);
+    }
+
+    .hero h1{
+      margin:0 0 8px;
+      font-size:2rem;
+      line-height:1.1;
+    }
+
+    .hero p{
+      margin:0;
+      color:var(--muted);
+      max-width:720px;
+      line-height:1.5;
+    }
+
+    .hero-actions{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      justify-content:flex-end;
+    }
+
+    .btn{
+      border:none;
+      border-radius:12px;
+      padding:11px 16px;
+      font-weight:700;
+      cursor:pointer;
+      transition:transform .15s ease, opacity .15s ease, box-shadow .15s ease;
+    }
+
+    .btn:hover{
+      transform:translateY(-1px);
+    }
+
+    .btn:disabled{
+      opacity:.7;
+      cursor:not-allowed;
+      transform:none;
+    }
+
+    .btn-primary{
+      background:linear-gradient(135deg, var(--primary), var(--primary-2));
+      color:white;
+      box-shadow:0 10px 24px rgba(96,165,250,.28);
+    }
+
+    .btn-secondary{
+      background:rgba(255,255,255,.08);
+      color:var(--text);
+      border:1px solid var(--border);
+    }
+
+    .btn-danger{
+      background:rgba(239,68,68,.14);
+      color:#fecaca;
+      border:1px solid rgba(239,68,68,.35);
+    }
+
+    .kpis{
+      display:grid;
+      grid-template-columns:repeat(4, 1fr);
+      gap:14px;
+      margin-bottom:18px;
+    }
+
+    .kpi{
+      background:linear-gradient(180deg, rgba(255,255,255,.11), rgba(255,255,255,.05));
+      border:1px solid var(--border);
+      border-radius:18px;
+      padding:18px;
+      box-shadow:var(--shadow);
+      backdrop-filter: blur(12px);
+    }
+
+    .kpi-label{
+      font-size:.9rem;
+      color:var(--muted);
+      margin-bottom:8px;
+      font-weight:600;
+    }
+
+    .kpi-value{
+      font-size:1.9rem;
+      font-weight:800;
+    }
+
+    .grid{
+      display:grid;
+      grid-template-columns:1fr 1.25fr;
+      gap:18px;
+    }
+
+    .card{
+      background:linear-gradient(180deg, rgba(255,255,255,.11), rgba(255,255,255,.05));
+      border:1px solid var(--border);
+      border-radius:24px;
+      box-shadow:var(--shadow);
+      overflow:hidden;
+      backdrop-filter: blur(14px);
+    }
+
+    .card-header{
+      padding:18px 20px;
+      border-bottom:1px solid var(--border);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+    }
+
+    .card-header h2{
+      margin:0;
+      font-size:1.08rem;
+    }
+
+    .muted{
+      color:var(--muted);
+      font-size:.95rem;
+    }
+
+    .card-body{
+      padding:20px;
+    }
+
+    form{
+      display:grid;
+      gap:14px;
+    }
+
+    .row{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:14px;
+    }
+
+    .field label{
+      display:block;
+      margin-bottom:7px;
+      font-size:.92rem;
+      font-weight:700;
+      color:#e2e8f0;
+    }
+
+    .field input,
+    .field select{
+      width:100%;
+      padding:12px 14px;
+      border-radius:12px;
+      border:1px solid var(--border);
+      outline:none;
+      background:rgba(15,23,42,.55);
+      color:var(--text);
+      font-size:.98rem;
+    }
+
+    .field input:focus,
+    .field select:focus,
+    .search-input:focus{
+      border-color:rgba(96,165,250,.65);
+      box-shadow:0 0 0 4px rgba(96,165,250,.14);
+    }
+
+    .hint{
+      margin-top:8px;
+      color:var(--muted);
+      font-size:.86rem;
+      line-height:1.45;
+    }
+
+    .message{
+      min-height:24px;
+      font-weight:700;
+      color:#dbeafe;
+    }
+
+    .toolbar{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:12px;
+      flex-wrap:wrap;
+      margin-bottom:14px;
+    }
+
+    .toolbar-left,
+    .toolbar-right{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      align-items:center;
+    }
+
+    .search-input,
+    .toolbar select{
+      padding:11px 12px;
+      border-radius:12px;
+      border:1px solid var(--border);
+      background:rgba(15,23,42,.55);
+      color:var(--text);
+      min-width:170px;
+      outline:none;
+    }
+
+    .table-wrap{
+      overflow:auto;
+      border-radius:18px;
+      border:1px solid var(--border);
+      background:rgba(2,6,23,.25);
+    }
+
+    table{
+      width:100%;
+      border-collapse:collapse;
+      min-width:760px;
+    }
+
+    thead th{
+      text-align:left;
+      padding:14px 12px;
+      font-size:.88rem;
+      color:var(--muted);
+      background:rgba(255,255,255,.05);
+      border-bottom:1px solid var(--border);
+    }
+
+    tbody td{
+      padding:14px 12px;
+      border-bottom:1px solid rgba(255,255,255,.08);
+      vertical-align:top;
+    }
+
+    tbody tr:hover{
+      background:rgba(255,255,255,.03);
+    }
+
+    .badge{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:7px 12px;
+      border-radius:999px;
+      font-size:.85rem;
+      font-weight:800;
+      border:1px solid var(--border);
+    }
+
+    .dot{
+      width:9px;
+      height:9px;
+      border-radius:50%;
+      display:inline-block;
+    }
+
+    .pendiente{
+      background:rgba(245,158,11,.10);
+      color:#fde68a;
+    }
+
+    .pendiente .dot{
+      background:var(--warning);
+    }
+
+    .aprobado{
+      background:rgba(34,197,94,.10);
+      color:#bbf7d0;
+    }
+
+    .aprobado .dot{
+      background:var(--success);
+    }
+
+    .entregado{
+      background:rgba(56,189,248,.10);
+      color:#bae6fd;
+    }
+
+    .entregado .dot{
+      background:var(--info);
+    }
+
+    .actions-inline{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+      margin-top:10px;
+    }
+
+    .mini-btn{
+      border:none;
+      border-radius:10px;
+      padding:8px 11px;
+      cursor:pointer;
+      font-size:.82rem;
+      font-weight:700;
+      transition:transform .15s ease, opacity .15s ease;
+    }
+
+    .mini-btn:hover{
+      transform:translateY(-1px);
+    }
+
+    .mini-pendiente{
+      background:rgba(245,158,11,.18);
+      color:#fde68a;
+    }
+
+    .mini-aprobado{
+      background:rgba(34,197,94,.18);
+      color:#bbf7d0;
+    }
+
+    .mini-entregado{
+      background:rgba(56,189,248,.18);
+      color:#bae6fd;
+    }
+
+    .empty{
+      text-align:center;
+      padding:32px 18px;
+      color:var(--muted);
+      border:1px dashed rgba(255,255,255,.18);
+      border-radius:18px;
+      background:rgba(255,255,255,.03);
+    }
+
+    @media (max-width: 980px){
+      .grid{
+        grid-template-columns:1fr;
+      }
+
+      .kpis{
+        grid-template-columns:repeat(2, 1fr);
+      }
+
+      .hero{
+        flex-direction:column;
+      }
+
+      .hero-actions{
+        justify-content:flex-start;
+      }
+    }
+
+    @media (max-width: 640px){
+      .row{
+        grid-template-columns:1fr;
+      }
+
+      .kpis{
+        grid-template-columns:1fr;
+      }
+
+      .container{
+        width:min(100% - 20px, 1180px);
+      }
+    }
   </style>
 </head>
 <body>
-  <div class="card">
-    <h1>Pedidos de Insumos de Oficina</h1>
-    <p>Llena el formulario y guarda.  (insumos_oficina → pedidos).</p>
-
-    <form id="form">
-      <label>Solicitante</label>
-      <input name="solicitante" placeholder="Ej. Priscila" required />
-
-      <label>Insumo</label>
-      <input name="insumo" placeholder="Ej. Hojas tamaño carta" required />
-
-      <div class="row">
-        <div>
-          <label>Cantidad</label>
-          <input name="cantidad" type="number" min="1" value="1" required />
-        </div>
-        <div>
-          <label>Fecha</label>
-          <input name="fecha" type="date" required />
-        </div>
+  <div class="container">
+    <section class="hero">
+      <div>
+        <h1>📦 Pedidos de Insumos de Oficina</h1>
+        <p>
+          Registra compras internas, consulta pedidos almacenados en MongoDB
+          y actualiza su estado desde la misma interfaz.
+        </p>
       </div>
+      <div class="hero-actions">
+        <button class="btn btn-secondary" id="btnRefrescar" type="button">🔄 Refrescar</button>
+        <button class="btn btn-danger" id="btnLimpiar" type="button">🧹 Limpiar filtros</button>
+        <button class="btn btn-primary" id="btnIrForm" type="button">➕ Nuevo pedido</button>
+      </div>
+    </section>
 
-      <label>Estado</label>
-      <select name="estado">
-        <option value="Pendiente" selected>Pendiente</option>
-        <option value="Aprobado">Aprobado</option>
-        <option value="Entregado">Entregado</option>
-      </select>
+    <section class="kpis">
+      <div class="kpi">
+        <div class="kpi-label">Total de pedidos</div>
+        <div class="kpi-value" id="kpiTotal">0</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-label">Pendientes</div>
+        <div class="kpi-value" id="kpiPend">0</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-label">Aprobados</div>
+        <div class="kpi-value" id="kpiApr">0</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-label">Entregados</div>
+        <div class="kpi-value" id="kpiEnt">0</div>
+      </div>
+    </section>
 
-      <button type="submit">Guardar pedido</button>
-      <div class="msg" id="msg"></div>
-    </form>
+    <section class="grid">
+      <article class="card" id="cardForm">
+        <div class="card-header">
+          <h2>📝 Registrar pedido</h2>
+          <span class="muted" id="apiStatus">API: —</span>
+        </div>
+        <div class="card-body">
+          <form id="form" autocomplete="off">
+            <div class="row">
+              <div class="field">
+                <label for="solicitante">Solicitante</label>
+                <input id="solicitante" name="solicitante" placeholder="Ej. Priscila García" required />
+              </div>
+              <div class="field">
+                <label for="fecha">Fecha</label>
+                <input id="fecha" name="fecha" type="date" required />
+              </div>
+            </div>
 
-    <h2>Pedidos guardados</h2>
-    <table>
-      <thead>
-        <tr>
-          <th>Solicitante</th>
-          <th>Insumo</th>
-          <th>Cantidad</th>
-          <th>Fecha</th>
-          <th>Estado</th>
-        </tr>
-      </thead>
-      <tbody id="tbody"></tbody>
-    </table>
+            <div class="row">
+              <div class="field">
+                <label for="insumo">Insumo</label>
+                <input id="insumo" name="insumo" placeholder="Ej. Hojas tamaño carta" required />
+                <div class="hint">
+                  El insumo representa el producto solicitado dentro del proceso interno de compras.
+                </div>
+              </div>
+              <div class="field">
+                <label for="cantidad">Cantidad</label>
+                <input id="cantidad" name="cantidad" type="number" min="1" value="1" required />
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="field">
+                <label for="estado">Estado</label>
+                <select id="estado" name="estado">
+                  <option value="Pendiente" selected>Pendiente</option>
+                  <option value="Aprobado">Aprobado</option>
+                  <option value="Entregado">Entregado</option>
+                </select>
+              </div>
+              <div class="field" style="display:flex; align-items:flex-end;">
+                <button class="btn btn-primary" id="btnGuardar" type="submit" style="width:100%;">
+                  💾 Guardar pedido
+                </button>
+              </div>
+            </div>
+
+            <div class="message" id="msg">—</div>
+          </form>
+        </div>
+      </article>
+
+      <article class="card">
+        <div class="card-header">
+          <h2>📋 Pedidos guardados</h2>
+          <span class="muted" id="lastUpdate">Última actualización: —</span>
+        </div>
+        <div class="card-body">
+          <div class="toolbar">
+            <div class="toolbar-left">
+              <input class="search-input" id="q" placeholder="Buscar por solicitante o insumo..." />
+              <select id="fEstado">
+                <option value="">Todos los estados</option>
+                <option value="Pendiente">Pendiente</option>
+                <option value="Aprobado">Aprobado</option>
+                <option value="Entregado">Entregado</option>
+              </select>
+            </div>
+            <div class="toolbar-right">
+              <select id="fOrden">
+                <option value="recientes" selected>Más recientes</option>
+                <option value="antiguos">Más antiguos</option>
+              </select>
+            </div>
+          </div>
+
+          <div id="tableWrap" class="table-wrap"></div>
+        </div>
+      </article>
+    </section>
   </div>
 
   <script>
     const form = document.getElementById("form");
     const msg = document.getElementById("msg");
-    const tbody = document.getElementById("tbody");
+    const tableWrap = document.getElementById("tableWrap");
 
-    // fecha hoy
-    const f = new Date();
-    const yyyy = f.getFullYear();
-    const mm = String(f.getMonth()+1).padStart(2,"0");
-    const dd = String(f.getDate()).padStart(2,"0");
+    const btnRefrescar = document.getElementById("btnRefrescar");
+    const btnLimpiar = document.getElementById("btnLimpiar");
+    const btnIrForm = document.getElementById("btnIrForm");
+    const btnGuardar = document.getElementById("btnGuardar");
+
+    const apiStatus = document.getElementById("apiStatus");
+    const lastUpdate = document.getElementById("lastUpdate");
+
+    const q = document.getElementById("q");
+    const fEstado = document.getElementById("fEstado");
+    const fOrden = document.getElementById("fOrden");
+
+    const kpiTotal = document.getElementById("kpiTotal");
+    const kpiPend = document.getElementById("kpiPend");
+    const kpiApr = document.getElementById("kpiApr");
+    const kpiEnt = document.getElementById("kpiEnt");
+
+    let pedidos = [];
+    let loading = false;
+
+    const now = new Date();
+    const yyyy = now.getFullYear();
+    const mm = String(now.getMonth() + 1).padStart(2, "0");
+    const dd = String(now.getDate()).padStart(2, "0");
     form.elements["fecha"].value = `${yyyy}-${mm}-${dd}`;
 
-    async function cargar() {
-      tbody.innerHTML = "";
-      const res = await fetch("/api/pedidos");
-      const data = await res.json();
-
-      data.forEach(p => {
-        const tr = document.createElement("tr");
-        const fecha = p.fecha ? new Date(p.fecha).toISOString().slice(0,10) : "";
-        tr.innerHTML = `
-          <td>${p.solicitante ?? ""}</td>
-          <td>${p.insumo ?? ""}</td>
-          <td>${p.cantidad ?? ""}</td>
-          <td>${fecha}</td>
-          <td>${p.estado ?? ""}</td>
-        `;
-        tbody.appendChild(tr);
-      });
+    function setApi(ok) {
+      apiStatus.textContent = `API: ${ok ? "Conectada" : "Sin conexión"}`;
+      apiStatus.style.color = ok ? "#86efac" : "#fca5a5";
     }
+
+    function setUpdate() {
+      const d = new Date();
+      const pad = (n) => String(n).padStart(2, "0");
+      lastUpdate.textContent = `Última actualización: ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+    }
+
+    function escapeHtml(str) {
+      return String(str).replace(/[&<>"']/g, (m) => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        "\"": "&quot;",
+        "'": "&#039;"
+      }[m]));
+    }
+
+    function formatDate(value) {
+      if (!value) return "—";
+      const d = new Date(value);
+      if (isNaN(d.getTime())) return value;
+      const pad = (n) => String(n).padStart(2, "0");
+      return `${pad(d.getDate())}/${pad(d.getMonth() + 1)}/${d.getFullYear()}`;
+    }
+
+    function badgeEstado(estado) {
+      const value = (estado || "Pendiente").toLowerCase();
+
+      if (value === "aprobado") {
+        return `<span class="badge aprobado"><span class="dot"></span>Aprobado</span>`;
+      }
+
+      if (value === "entregado") {
+        return `<span class="badge entregado"><span class="dot"></span>Entregado</span>`;
+      }
+
+      return `<span class="badge pendiente"><span class="dot"></span>Pendiente</span>`;
+    }
+
+    function updateKPIs(lista) {
+      kpiTotal.textContent = lista.length;
+      kpiPend.textContent = lista.filter(p => (p.estado || "Pendiente").toLowerCase() === "pendiente").length;
+      kpiApr.textContent = lista.filter(p => (p.estado || "").toLowerCase() === "aprobado").length;
+      kpiEnt.textContent = lista.filter(p => (p.estado || "").toLowerCase() === "entregado").length;
+    }
+
+    function applyFilters() {
+      const term = (q.value || "").trim().toLowerCase();
+      const estado = (fEstado.value || "").trim().toLowerCase();
+      let lista = [...pedidos];
+
+      if (term) {
+        lista = lista.filter((p) => {
+          const solicitante = (p.solicitante || "").toLowerCase();
+          const insumo = (p.insumo || "").toLowerCase();
+          return solicitante.includes(term) || insumo.includes(term);
+        });
+      }
+
+      if (estado) {
+        lista = lista.filter((p) => (p.estado || "Pendiente").toLowerCase() === estado);
+      }
+
+      if (fOrden.value === "antiguos") {
+        lista.reverse();
+      }
+
+      return lista;
+    }
+
+    function render() {
+      const lista = applyFilters();
+      updateKPIs(pedidos);
+
+      if (loading) {
+        tableWrap.innerHTML = `<div class="empty">Cargando pedidos desde MongoDB...</div>`;
+        return;
+      }
+
+      if (!lista.length) {
+        tableWrap.innerHTML = `<div class="empty">No hay resultados. Registra un pedido o limpia los filtros.</div>`;
+        return;
+      }
+
+      const rows = lista.map((p, index) => `
+        <tr>
+          <td>${index + 1}</td>
+          <td><strong>${escapeHtml(p.solicitante || "")}</strong></td>
+          <td>${escapeHtml(p.insumo || "")}</td>
+          <td>${Number(p.cantidad || 0)}</td>
+          <td>${formatDate(p.fecha)}</td>
+          <td>
+            ${badgeEstado(p.estado)}
+            <div class="actions-inline">
+              <button class="mini-btn mini-aprobado" type="button" onclick="cambiarEstado('${p._id}', 'Aprobado')">Aprobar</button>
+              <button class="mini-btn mini-entregado" type="button" onclick="cambiarEstado('${p._id}', 'Entregado')">Entregar</button>
+              <button class="mini-btn mini-pendiente" type="button" onclick="cambiarEstado('${p._id}', 'Pendiente')">Volver</button>
+            </div>
+          </td>
+        </tr>
+      `).join("");
+
+      tableWrap.innerHTML = `
+        <table>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Solicitante</th>
+              <th>Insumo</th>
+              <th>Cantidad</th>
+              <th>Fecha</th>
+              <th>Estado / Acciones</th>
+            </tr>
+          </thead>
+          <tbody>${rows}</tbody>
+        </table>
+      `;
+    }
+
+    async function cargar() {
+      loading = true;
+      render();
+
+      try {
+        const res = await fetch("/api/pedidos");
+        setApi(res.ok);
+
+        if (!res.ok) {
+          throw new Error("Error al obtener pedidos");
+        }
+
+        pedidos = await res.json();
+        setUpdate();
+      } catch (error) {
+        setApi(false);
+        console.error(error);
+      } finally {
+        loading = false;
+        render();
+      }
+    }
+
+    async function cambiarEstado(id, estado) {
+      try {
+        const res = await fetch(`/api/pedidos/${id}/estado`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ estado })
+        });
+
+        const out = await res.json().catch(() => ({}));
+        setApi(res.ok);
+
+        if (!res.ok) {
+          alert("Error: " + (out.error || "No se pudo actualizar"));
+          return;
+        }
+
+        await cargar();
+      } catch (error) {
+        setApi(false);
+        alert("Error de red. Revisa el backend.");
+        console.error(error);
+      }
+    }
+
+    window.cambiarEstado = cambiarEstado;
 
     form.addEventListener("submit", async (e) => {
       e.preventDefault();
-      msg.textContent = "Guardando...";
+      msg.textContent = "Guardando pedido...";
 
       const payload = {
         solicitante: form.elements["solicitante"].value.trim(),
         insumo: form.elements["insumo"].value.trim(),
-        cantidad: form.elements["cantidad"].value,
+        cantidad: Number(form.elements["cantidad"].value),
         fecha: form.elements["fecha"].value,
         estado: form.elements["estado"].value
       };
 
-      const res = await fetch("/api/pedidos", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload)
-      });
-
-      const out = await res.json();
-
-      if (!res.ok) {
-        msg.textContent = "❌ Error: " + (out.error || out.message || "No se pudo guardar");
+      if (!payload.solicitante || !payload.insumo || !payload.fecha || !Number.isFinite(payload.cantidad) || payload.cantidad < 1) {
+        msg.textContent = "⚠️ Completa los campos correctamente.";
         return;
       }
 
-      msg.textContent = "✅ Guardado. Revisa MongoDB Compass.";
-      form.reset();
-      form.elements["cantidad"].value = 1;
-      form.elements["estado"].value = "Pendiente";
-      form.elements["fecha"].value = `${yyyy}-${mm}-${dd}`;
+      btnGuardar.disabled = true;
+      btnGuardar.textContent = "Guardando...";
 
-      await cargar();
+      try {
+        const res = await fetch("/api/pedidos", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+
+        const out = await res.json().catch(() => ({}));
+        setApi(res.ok);
+
+        if (!res.ok) {
+          msg.textContent = "❌ Error: " + (out.error || out.message || "No se pudo guardar");
+          return;
+        }
+
+        msg.textContent = "✅ Pedido guardado correctamente.";
+        form.reset();
+        form.elements["cantidad"].value = 1;
+        form.elements["estado"].value = "Pendiente";
+        form.elements["fecha"].value = `${yyyy}-${mm}-${dd}`;
+
+        await cargar();
+      } catch (error) {
+        setApi(false);
+        console.error(error);
+        msg.textContent = "❌ Error de red.";
+      } finally {
+        btnGuardar.disabled = false;
+        btnGuardar.textContent = "💾 Guardar pedido";
+      }
     });
+
+    btnRefrescar.addEventListener("click", cargar);
+
+    btnLimpiar.addEventListener("click", () => {
+      q.value = "";
+      fEstado.value = "";
+      fOrden.value = "recientes";
+      render();
+    });
+
+    btnIrForm.addEventListener("click", () => {
+      document.getElementById("cardForm").scrollIntoView({ behavior: "smooth", block: "start" });
+      setTimeout(() => form.elements["solicitante"].focus(), 250);
+    });
+
+    q.addEventListener("input", render);
+    fEstado.addEventListener("change", render);
+    fOrden.addEventListener("change", render);
 
     cargar();
   </script>
